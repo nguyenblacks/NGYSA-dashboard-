@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGYSA Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <!-- Authentication Form -->
+    <div id="auth-container" class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-4">Register</h2>
+        
+        <input type="text" id="auth-username" placeholder="Enter username" 
+               class="w-full p-3 border border-gray-300 rounded-md mb-3">
+
+        <input type="password" id="auth-password" placeholder="Enter password" 
+               class="w-full p-3 border border-gray-300 rounded-md mb-4">
+        
+        <button id="auth-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow">
+            Register
+        </button>
+
+        <p class="text-center text-gray-600 mt-4">
+            Already have an account? 
+            <span id="toggle-auth" class="text-blue-500 cursor-pointer">Log in</span>
+        </p>
+    </div>
+
+    <!-- Dashboard (Hidden Initially) -->
+    <div id="dashboard-container" class="hidden w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">NGYSA Dashboard</h2>
+        
+        <div class="space-y-4">
+            <a href="https://surveyheart.com/form/6794ee54f445a84ffc9ddd92" 
+               class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow">
+               Contact NGYSA Support
+            </a>
+
+            <a href="https://form.jotform.com/250044768268564" 
+               class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-md shadow">
+               Create New Release
+            </a>
+
+            <a href="https://surveyheart.com/form/678b5cb518860a107ac67883" 
+               class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-md shadow">
+               Request Takedown
+            </a>
+
+            <button id="logout-btn" class="block w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 rounded-md shadow">
+                Logout
+            </button>
+        </div>
+
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg shadow-inner">
+            <h3 class="text-lg font-semibold text-gray-700">Available Stores on Free Plan</h3>
+            <ul class="mt-2 text-gray-600">
+                <li class="flex items-center gap-2"><span>✅</span> Spotify</li>
+                <li class="flex items-center gap-2"><span>✅</span> YouTube</li>
+                <li class="flex items-center gap-2"><span>✅</span> Yandex</li>
+                <li class="flex items-center gap-2"><span>✅</span> Anghami</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const authContainer = document.getElementById("auth-container");
+        const dashboardContainer = document.getElementById("dashboard-container");
+        const authTitle = document.getElementById("auth-title");
+        const authBtn = document.getElementById("auth-btn");
+        const toggleAuth = document.getElementById("toggle-auth");
+        const logoutBtn = document.getElementById("logout-btn");
+
+        let isLoginMode = false; // Toggle between Register & Login
+
+        // Check if user is already logged in
+        if (localStorage.getItem("user")) {
+            authContainer.classList.add("hidden");
+            dashboardContainer.classList.remove("hidden");
+        }
+
+        // Toggle between Register & Login
+        toggleAuth.addEventListener("click", () => {
+            isLoginMode = !isLoginMode;
+            authTitle.textContent = isLoginMode ? "Login" : "Register";
+            authBtn.textContent = isLoginMode ? "Login" : "Register";
+            toggleAuth.textContent = isLoginMode ? "Register" : "Log in";
+        });
+
+        // Register or Login
+        authBtn.addEventListener("click", () => {
+            const username = document.getElementById("auth-username").value;
+            const password = document.getElementById("auth-password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password!");
+                return;
+            }
+
+            if (!isLoginMode) {
+                // Register
+                if (localStorage.getItem(username)) {
+                    alert("Username already exists! Try logging in.");
+                } else {
+                    localStorage.setItem(username, password);
+                    alert("Registration successful! You can now log in.");
+                    isLoginMode = true;
+                    authTitle.textContent = "Login";
+                    authBtn.textContent = "Login";
+                    toggleAuth.textContent = "Register";
+                }
+            } else {
+                // Login
+                const storedPassword = localStorage.getItem(username);
+                if (storedPassword && storedPassword === password) {
+                    localStorage.setItem("user", username);
+                    authContainer.classList.add("hidden");
+                    dashboardContainer.classList.remove("hidden");
+                } else {
+                    alert("Invalid username or password!");
+                }
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("user");
+            location.reload(); // Refresh to show login/register again
+        });
+    </script>
+
+</body>
+</html>
